@@ -233,17 +233,17 @@
 
 ## list
 
-|Command|O|Version|Note||
-|:--|---|--|---|---|
-|BRPOP k1 [k2 ...] timeout|O(1)|2.0.0|||
-|BRPOPLPUSH src dest timeout|O(1)|2.2.0|||
-|BLPOP k1 [k2 ...] timeout|O(1)|2.0.0|||
-|LINDEX key index|O(N)|1.0.0|||
-|LINSERT key BEFORE\|AFTER pivot value|O(N)|2.2.0|||
-|LLEN key|O(1)|1.0.0|||
-|LPOP key|O(1)|1.0.0|||
-|LPUSH key v1 [v2 ...]|~O(1)|1.0.0|<2.4 one value||
-|LPUSHX key value|O(1)|2.2.0|||
+|Command|O|Version|Note|
+|:--|---|--|---|
+|BRPOP k1 [k2 ...] timeout|O(1)|2.0.0||
+|BRPOPLPUSH src dest timeout|O(1)|2.2.0||
+|BLPOP k1 [k2 ...] timeout|O(1)|2.0.0||
+|LINDEX key index|O(N)|1.0.0||
+|LINSERT key BEFORE\|AFTER pivot value|O(N)|2.2.0||
+|LLEN key|O(1)|1.0.0||
+|LPOP key|O(1)|1.0.0||
+|LPUSH key v1 [v2 ...]|~O(1)|1.0.0|<2.4 one value|
+|LPUSHX key value|O(1)|2.2.0||
 
 
 
