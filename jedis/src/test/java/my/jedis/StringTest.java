@@ -1,58 +1,17 @@
 package my.jedis;
 
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import redis.clients.jedis.*;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Pipeline;
+import redis.clients.jedis.Response;
 import redis.clients.jedis.params.SetParams;
 
 import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-public class RedisTest {
-    private static final String HOST = "10.105.23.70";
-    private static final int PORT = 6379;
-    /**
-     * connection timeout and socket timeout, in milliseconds
-     */
-    private static final int TIMEOUT = 3000;
-    private static final String PASSWORD = "yourpassword";
-    private static final String OK = "OK";
-    private static final int SECONDS_60 = 60;
-    private static final Long ONE = 1L;
-    private static final Long ZERO = 0L;
-    private static final Long NONE = -1L;
-    private static final Long NOT_EXISTS = -2L;
-
-    private static JedisPool pool;
-
-    @BeforeClass
-    public static void beforeClass() {
-        createPool();
-    }
-
-    private static void createPool() {
-        JedisPoolConfig config = new JedisPoolConfig();
-        config.setMaxTotal(1024);
-        config.setMaxIdle(8);
-        config.setMinIdle(4);
-        config.setMaxWaitMillis(3000);
-        config.setTestOnBorrow(true);
-        config.setTestWhileIdle(false);
-        config.setTestOnReturn(false);
-        pool = new JedisPool(config, HOST, PORT, TIMEOUT, PASSWORD, false);
-    }
-
-    @AfterClass
-    public static void afterClass() {
-        if (pool != null) {
-            pool.close();
-            pool = null;
-        }
-    }
-
+public class StringTest extends BaseTest {
     @Test
     public void set() {
         final String KEY = UUID.randomUUID().toString();
@@ -183,7 +142,7 @@ public class RedisTest {
     public void update() throws InterruptedException {
         final int BATCH_SIZE = 3;
 
-        try (Jedis jedis = new Jedis(HOST, PORT);
+        try (Jedis jedis = pool.getResource();
              Pipeline pipeline = jedis.pipelined()) {
             while (true) {
                 pipeline.multi();
