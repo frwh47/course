@@ -34,6 +34,59 @@
 
 
 
+# Install
+
+- home https://redis.io/
+- github https://github.com/antirez/redis  41.6k stars
+- mirror http://www.redis.cn/
+
+## compile
+
+```
+sudo yum install -y gcc make
+
+curl -O http://download.redis.io/releases/redis-5.0.8.tar.gz
+tar xvf redis-5.0.8.tar.gz
+cd redis-5.0.8
+make
+```
+## install
+```
+make install   ## copy cmd  /usr/local/bin/
+
+redis-server
+redis-cli
+redis-sentinel
+redis-check-aof
+redis-check-rdb
+redis-benchmark
+```
+## start
+```
+vi redis.conf
+
+#bind 127.0.0.1
+port 6379
+daemonize no
+#requirepass yourpassword
+
+redis-server redis.conf
+```
+
+## first command
+
+```
+redis-cli 
+redis-cli -h ip -p port -a password
+
+>set hello world
+>get hello
+```
+
+
+
+
+
 
 
 
@@ -47,6 +100,20 @@
 
 
 # Data Structure
+
+|        |          |      |      |
+| ------ | -------- | ---- | ---- |
+|        | encoding |      |      |
+| string |          |      |      |
+| list   |          |      |      |
+| hash   |          |      |      |
+| set    |          |      |      |
+| zset   |          |      |      |
+|        |          |      |      |
+
+
+
+# Command
 
 ## string
 |Command|O|Version|Note|
@@ -460,13 +527,11 @@ F --> G
 
 # Replication
 
+- replicaof ip port / slaveof ip port
 ```
-replicaof ip port / slaveof ip port
 masterauth master-password
-
 replica-serve-stale-data yes
 replica-read-only yes
-
 replica-priority 100
 ```
 
@@ -497,3 +562,22 @@ slaveof  ip port
 # Optimize
 
 slowlog  get  n
+
+info commandstats
+
+
+
+redis-cli --bigkeys
+
+redis-cli --stat
+
+
+
+Transparent Huge Pages
+
+TCP backlog
+
+
+
+
+
