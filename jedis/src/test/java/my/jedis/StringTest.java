@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-public class StringTest extends BaseTest {
+public class StringTest extends StandAloneBaseTest {
     @Test
     public void set() {
         final String KEY = UUID.randomUUID().toString();
@@ -69,6 +69,43 @@ public class StringTest extends BaseTest {
             Assert.assertNull(jedis.set(KEY, VALUE, nxEx));
             Assert.assertEquals(KEY, jedis.get(KEY));
             Assert.assertEquals(ONE, jedis.del(KEY));
+        }
+    }
+
+    @Test
+    public void incr() {
+
+    }
+
+    @Test
+    public void bit() {
+
+    }
+
+    @Test
+    public void hyper() {
+        String tom = "tom";
+        String mike = "mike";
+        String tomAndMike = tom + mike;
+        try (Jedis jedis = pool.getResource()) {
+            jedis.del(tom, mike);
+            jedis.pfadd(tom, "Java", "Redis");
+            Assert.assertEquals(2, jedis.pfcount(tom));
+
+            jedis.pfadd(mike, "Redis", "Golang", "Python", "Python");
+            Assert.assertEquals(3, jedis.pfcount(mike));
+
+            Assert.assertEquals(4, jedis.pfcount(tom, mike));
+            jedis.pfmerge(tomAndMike, tom, mike);
+            Assert.assertEquals(4, jedis.pfcount(tomAndMike));
+        }
+    }
+
+    @Test
+    public void t1() {
+        int i = 8;
+        while ((i -= 3) > 0) {
+            System.out.println("i = " + i);
         }
     }
 

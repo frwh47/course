@@ -73,7 +73,7 @@ daemonize no
 redis-server redis.conf
 ```
 
-## first command
+## hello world
 
 ```
 redis-cli 
@@ -311,15 +311,39 @@ redis-cli -h ip -p port -a password
 |LPOP key|O(1)|1.0.0||
 |LPUSH key v1 [v2 ...]|~O(1)|1.0.0|<2.4 one value|
 |LPUSHX key value|O(1)|2.2.0||
+|LRANGE key start stop|O(N)|1.0.0||
+|LREM key count value|O(N)|1.0.0||
+|LSET key index value|O(N)|1.0.0||
+|LTRIM key start stop|O(N)|1.0.0||
+|RPOP key|O(1)|1.0.0||
+|RPOPLPUSH source destination|O(1)|1.2.0||
+|RPUSH key v1 [v2 ...]|O(1)|1.0.0||
+|RPUSHX key value|O(1)|2.2.0||
+|||||
 
 
 
 
 
 ## hash
-|Command|O|Version||
-|:--|---|--|---|
-|PFADD key v1 [v2 ...]|~O(1)|2.8.9||
+|Command|O|Version|Note||
+|:--|---|--|---|---|
+|HDEL key field [field ...]|O(N)|2.0.0|<2.4 single value||
+|HEXISTS key field|O(1)|2.0.0|||
+|HGET key field|O(1)|2.0.0|||
+|HGETALL key|O(N)|2.0.0|||
+|HINCRBY key field increment|O(1)|2.0.0|||
+|HINCRBYFLOAT key field increment|O(1)|2.6.0|||
+|HKEYS key|O(N)|2.0.0|||
+|HLEN key|O(1)|2.0.0|||
+|HMGET key field [field ...]|O(N)|2.0.0|||
+|HMSET key field value [field value ...]|O(N)|2.0.0|||
+|HSET key field value|O(1)|2.0.0|||
+|HSETNX key field value|O(1)|2.0.0|||
+|HSTRLEN key field|O(1)|3.2.0|||
+|HVALS key|O(N)|2.0.0|||
+|HSCAN key cursor [MATCH pattern] [COUNT count]|~O(1)|2.8.0|||
+||||||
 
 
 
@@ -541,11 +565,51 @@ slaveof  ip port
 
  
 
+
+
+
+
+
+
 # Sentinel
 
 
 
+sentinel  masters
+
+sentinel  master  master-name
+
+sentinel  slaves  master-name
+
+sentinel  sentinels  master-name
+
+sentinel  get-master-addr-by-name  master-name
+
+sentinel  reset  pattern
+
+sentinel  failover  master-name
+
+sentinel  ckquorum  master-name
+
+sentinel  flushconfig
+
+sentinel  remove  master-name
+
+
+
+
+
+
+
+
+
 # Cluster
+
+
+
+
+
+
 
 
 
