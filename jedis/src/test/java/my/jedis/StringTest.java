@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-public class StringTest extends StandAloneBaseTest {
+public class StringTest extends StandAloneBase {
     @Test
     public void set() {
         final String KEY = UUID.randomUUID().toString();
@@ -74,12 +74,39 @@ public class StringTest extends StandAloneBaseTest {
 
     @Test
     public void incr() {
+        final String KEY = "counter";
+        final long TIMES = 10;
+        try (Jedis jedis = pool.getResource()) {
+            for (long num = 1; num <= TIMES; num++) {
+                Assert.assertEquals(num, jedis.incr(KEY).longValue());
+            }
+            Assert.assertEquals(String.valueOf(TIMES), jedis.get(KEY));
 
+            jedis.del(KEY);
+            for (long num = 1; num <= TIMES; num++) {
+                jedis.incrBy(KEY, num);
+            }
+            long expected = TIMES * (TIMES + 1) / 2;
+            Assert.assertEquals(expected, Long.parseLong(jedis.get(KEY)));
+        }
     }
 
     @Test
     public void bit() {
+        String key = "bit";
+        final int TIMES = 100;
+        try (Jedis jedis = pool.getResource()) {
+            for (int i = 0; i < TIMES; i++) {
+                //setbit 返回的是该位修改之前的值
+                Assert.assertFalse(jedis.setbit(key, i, true));
+                Assert.assertEquals(i + 1, jedis.bitcount(key).longValue());
+            }
 
+            for (int i = 0; i < TIMES; i++) {
+                Assert.assertTrue(jedis.setbit(key, i, false));
+                Assert.assertEquals(TIMES - 1 - i, jedis.bitcount(key).longValue());
+            }
+        }
     }
 
     @Test
@@ -101,13 +128,6 @@ public class StringTest extends StandAloneBaseTest {
         }
     }
 
-    @Test
-    public void t1() {
-        int i = 8;
-        while ((i -= 3) > 0) {
-            System.out.println("i = " + i);
-        }
-    }
 
     interface MinArray {
         void put(int index, int value);
@@ -119,7 +139,7 @@ public class StringTest extends StandAloneBaseTest {
         int[] array();
     }
 
-    @Test
+    //    @Test
     public void keepPing() throws InterruptedException {
         String key = "a";
         while (true) {
@@ -136,7 +156,7 @@ public class StringTest extends StandAloneBaseTest {
 
     @Test
     public void writeNew() {
-        final int RUN_TIMES = 1000 * 10;
+        final int RUN_TIMES = 100;
         final int BATCH_SIZE = 100;
 
         try (Jedis jedis = pool.getResource();
@@ -153,7 +173,7 @@ public class StringTest extends StandAloneBaseTest {
     }
 
 
-    @Test
+    //    @Test
     public void updateExists() throws InterruptedException {
         final int BATCH_SIZE = 3;
         final String key = String.valueOf(1);
@@ -175,7 +195,7 @@ public class StringTest extends StandAloneBaseTest {
         }
     }
 
-    @Test
+    //    @Test
     public void update() throws InterruptedException {
         final int BATCH_SIZE = 3;
 
