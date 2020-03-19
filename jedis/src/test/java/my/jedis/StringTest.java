@@ -172,7 +172,6 @@ public class StringTest extends StandAloneBase {
         }
     }
 
-
     //    @Test
     public void updateExists() throws InterruptedException {
         final int BATCH_SIZE = 3;

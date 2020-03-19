@@ -8,19 +8,13 @@ import java.util.List;
 import java.util.Set;
 
 public abstract class JedisPoolFactory {
+    protected static final String HOST = "10.105.23.70";
     protected static final String PASSWORD = "yourpassword";
     /**
      * timeout in milliseconds
      */
     protected static final int CONNECT_TIMEOUT = 3000;
     protected static final int SO_TIMEOUT = 3000;
-
-    protected static final String OK = "OK";
-    protected static final int SECONDS_60 = 60;
-    protected static final Long ONE = 1L;
-    protected static final Long ZERO = 0L;
-    protected static final Long NONE = -1L;
-    protected static final Long NOT_EXISTS = -2L;
 
     private static JedisPoolConfig createPoolConfig() {
         JedisPoolConfig config = new JedisPoolConfig();
@@ -34,8 +28,7 @@ public abstract class JedisPoolFactory {
         return config;
     }
 
-    public static JedisPoolAbstract createPool() {
-        final String HOST = "10.105.23.70";
+    public static JedisPool createPool() {
         final int PORT = 6379;
 
         JedisPoolConfig config = createPoolConfig();
@@ -43,31 +36,49 @@ public abstract class JedisPoolFactory {
                 PASSWORD, 0, "UT");
     }
 
-    public static JedisPoolAbstract createSentinelPool() {
+    public static JedisSentinelPool createSentinelPool() {
         final String masterName = "mymaster";
-        Set<String> sentinels = new HashSet<String>();
-        sentinels.add("ip:port");
-        sentinels.add("ip:port");
-        sentinels.add("ip:port");
+        Set<String> sentinels = new HashSet<>();
+        for (int port = 27001; port <= 27003; port++) {
+            sentinels.add(HOST + ":" + port);
+        }
+        return createSentinelPool(masterName, sentinels);
+    }
 
+    public static JedisSentinelPool createSentinelPool(String masterName, Set<String> sentinels) {
         JedisPoolConfig config = createPoolConfig();
         return new JedisSentinelPool(masterName, sentinels, config,
                 CONNECT_TIMEOUT, SO_TIMEOUT,
                 PASSWORD, 0, "UT");
     }
 
-    public static ShardedJedisPool createJedis() {
-        JedisPoolConfig config = createPoolConfig();
+    public static RedisSentinelTool createRedisSentinelTool() {
+        final String masterName = "mymaster";
+        Set<HostAndPort> sentinels = new HashSet<>();
+        for (int port = 27001; port <= 27003; port++) {
+            sentinels.add(new HostAndPort(HOST, port));
+        }
+        return new RedisSentinelTool(masterName, sentinels, PASSWORD);
+    }
+
+    public static ShardedJedisPool createShardedJedisPool() {
         List<JedisShardInfo> shards = new ArrayList<>();
-        shards.add(new JedisShardInfo("127.0.0.1", 6379));
+        for (int port = 7001; port <= 7003; port++) {
+            JedisShardInfo shard = new JedisShardInfo(HOST, port);
+            shard.setPassword(PASSWORD);
+            shards.add(shard);
+        }
+        JedisPoolConfig config = createPoolConfig();
         return new ShardedJedisPool(config, shards);
     }
 
-    public static JedisCluster create() {
+    public static JedisCluster createJedisCluster() {
         Set<HostAndPort> hps = new HashSet<>();
-        hps.add(new HostAndPort("127.0.0.1", 6379));
+        for (int port = 6001; port <= 6006; port++) {
+            hps.add(new HostAndPort(HOST, port));
+        }
         JedisPoolConfig config = createPoolConfig();
         return new JedisCluster(hps, CONNECT_TIMEOUT, SO_TIMEOUT,
-                3, "UT", config);
+                10, PASSWORD, "UT", config);
     }
 }
