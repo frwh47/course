@@ -29,7 +29,7 @@ public abstract class JedisPoolFactory {
     }
 
     public static JedisPool createPool() {
-        final int PORT = 6379;
+        final int PORT = 7001;
 
         JedisPoolConfig config = createPoolConfig();
         return new JedisPool(config, HOST, PORT, CONNECT_TIMEOUT, SO_TIMEOUT,

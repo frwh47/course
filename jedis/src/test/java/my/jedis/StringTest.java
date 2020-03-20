@@ -1,8 +1,11 @@
 package my.jedis;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPoolAbstract;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Response;
 import redis.clients.jedis.params.SetParams;
@@ -11,7 +14,21 @@ import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-public class StringTest extends StandAloneBase {
+public class StringTest extends BaseTest {
+    private static JedisPoolAbstract pool;
+
+    @BeforeClass
+    public static void beforeClass() {
+        pool = JedisPoolFactory.createPool();
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        if (pool != null) {
+            pool.close();
+        }
+    }
+
     @Test
     public void set() {
         final String KEY = UUID.randomUUID().toString();
@@ -139,18 +156,14 @@ public class StringTest extends StandAloneBase {
         int[] array();
     }
 
-    //    @Test
-    public void keepPing() throws InterruptedException {
-        String key = "a";
-        while (true) {
-            try (Jedis jedis = pool.getResource()) {
-                String pong = jedis.ping();
-                String msg = String.format("%s %s %s = %s", new Date(), pong, key, jedis.get(key));
-                System.out.println(msg);
-            } catch (Exception ex) {
-                System.err.println(ex.getMessage());
+    @Test
+    public void keepWriting() throws InterruptedException {
+        try (Jedis jedis = pool.getResource()) {
+            while (true) {
+                String key = UUID.randomUUID().toString();
+                jedis.set(key, key);
+                TimeUnit.MILLISECONDS.sleep(100);
             }
-            TimeUnit.SECONDS.sleep(3);
         }
     }
 

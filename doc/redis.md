@@ -549,19 +549,69 @@ F --> G
 
 
 
-# Replication
-
-- replicaof ip port / slaveof ip port
-```
-masterauth master-password
-replica-serve-stale-data yes
-replica-read-only yes
-replica-priority 100
-```
-
 # Master - Slave
 
-slaveof  ip port
+- replicaof ip port / slaveof ip port
+
+- partial resynchronization
+```sequence
+participant Master
+participant Slave
+
+Slave -> Master: replicaof
+Master -> Slave:
+Slave -> Master: ping
+Master -> Slave: pong
+Slave -> Master: psync runid offset
+Master -> Master: runid != itself or offset not in repl-queue, goto full sync
+Master -> Master: runid == itself && offset in repl-queue, continue
+Master -> Slave: send command in repl-queue
+Master -> Slave: ...  
+Master -> Slave: send command in repl-queue
+```
+
+- full sync
+```sequence
+participant Master
+participant Slave
+
+Slave -> Master: replicaof
+Master -> Slave:
+Master --> Master: bgsave -> RDB
+Master -> Master: execute command & store write command in repl-queue
+Master -> Master: ...
+Master -> Slave: send RDB
+Master -> Master: execute command & store write command in repl-queue
+Master -> Master: ...
+Slave -> Slave: load RDB
+Master -> Slave: send command in repl-queue  
+Master -> Slave: ...  
+Master -> Slave: send command in repl-queue
+```
+
+```
+masterauth master-password
+
+#复制中断或正在进行
+#yes - 响应客户端请求，可能返回旧数据
+# no - 对应客户端的数据请求返回"SYNC with master in progress"，
+#      正常处理info, ping,shutdown等请求 
+replica-serve-stale-data yes
+
+replica-read-only yes
+
+replica-priority 100
+repl-backlog-size 1mb
+
+#主节点，如果超过3600秒没有slave，释放repl-backlog
+#从节点，忽略此项设置，随时可能升级为主节点，然后立刻支持部分复制 
+repl-backlog-ttl 3600 
+
+# min-replicas-to-write 0
+# min-replicas-max-lag 10
+```
+
+
 
  
 
